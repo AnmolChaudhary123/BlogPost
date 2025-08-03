@@ -56,7 +56,7 @@ export default function CreateBlogPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/blog', {
+      const response = await fetch('/api/blogs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

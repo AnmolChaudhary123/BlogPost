@@ -69,7 +69,7 @@ export default function CreateBlogPage() {
 
       if (response.ok) {
         const data = await response.json();
-        router.push(`/blog/${data.slug}`);
+        router.push(`/blogs/${data.slug}`);
       } else {
         const error = await response.json();
         alert(error.message || 'Something went wrong');

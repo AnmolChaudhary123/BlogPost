@@ -22,7 +22,7 @@ interface BlogFormData {
 export default function CreateBlogPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<BlogFormData>({
     title: '',
@@ -56,7 +56,7 @@ export default function CreateBlogPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/blogs', {
+      const response = await fetch('/api/blog', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -268,7 +268,7 @@ export default function CreateBlogPage() {
               </>
             )}
           </button>
-          
+
           <Link href="/dashboard" className="btn btn-outline">
             Cancel
           </Link>

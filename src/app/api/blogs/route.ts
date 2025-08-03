@@ -6,69 +6,77 @@ import { Blog } from '@/models';
 import { generateSlug } from '@/utils';
 
 export async function POST(request: NextRequest) {
-  const session = await getServerSession(authOptions) as { user: { id: string } } | null;
-  if (!session) {
+  try {
+    const session = await getServerSession(authOptions) as { user: { id: string } } | null;
+    if (!session) {
+      return NextResponse.json(
+        { message: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+  
+    const {
+      title,
+      content,
+      excerpt,
+      category,
+      tags,
+      featuredImage,
+      status,
+      isFeatured,
+    } = await request.json();
+  
+    if (!title || !content || !excerpt || !category) {
+      return NextResponse.json(
+        { message: 'Title, content, excerpt, and category are required' },
+        { status: 400 }
+      );
+    }
+  
+    await connectDB();
+  
+    // Generate slug
+    const slug = generateSlug(title);
+  
+    // Check if slug already exists
+    const existingBlog = await Blog.findOne({ slug });
+    if (existingBlog) {
+      return NextResponse.json(
+        { message: 'A blog with this title already exists' },
+        { status: 400 }
+      );
+    }
+  
+    // Calculate read time (rough estimate: 200 words per minute)
+    const wordCount = content.split(/\s+/).length;
+    const readTime = Math.ceil(wordCount / 200);
+  
+    // Create blog
+    const blog = new Blog({
+      title,
+      slug,
+      content,
+      excerpt,
+      category,
+      tags: tags || [],
+      featuredImage: featuredImage || '',
+      author: session.user.id,
+      status: status || 'draft',
+      isFeatured: isFeatured || false,
+      readTime,
+      publishedAt: status === 'published' ? new Date() : null,
+    });
+  
+    await blog.save();
+  
+    return NextResponse.json(blog, { status: 201 });
+  } catch (error) {
+    console.error("Error on GET: ", error);
     return NextResponse.json(
-      { message: 'Unauthorized' },
-      { status: 401 }
-    );
+      { message: "Error creating blog" },
+      { status: 500 }
+    )
   }
-
-  const {
-    title,
-    content,
-    excerpt,
-    category,
-    tags,
-    featuredImage,
-    status,
-    isFeatured,
-  } = await request.json();
-
-  if (!title || !content || !excerpt || !category) {
-    return NextResponse.json(
-      { message: 'Title, content, excerpt, and category are required' },
-      { status: 400 }
-    );
-  }
-
-  await connectDB();
-
-  // Generate slug
-  const slug = generateSlug(title);
-
-  // Check if slug already exists
-  const existingBlog = await Blog.findOne({ slug });
-  if (existingBlog) {
-    return NextResponse.json(
-      { message: 'A blog with this title already exists' },
-      { status: 400 }
-    );
-  }
-
-  // Calculate read time (rough estimate: 200 words per minute)
-  const wordCount = content.split(/\s+/).length;
-  const readTime = Math.ceil(wordCount / 200);
-
-  // Create blog
-  const blog = new Blog({
-    title,
-    slug,
-    content,
-    excerpt,
-    category,
-    tags: tags || [],
-    featuredImage: featuredImage || '',
-    author: session.user.id,
-    status: status || 'draft',
-    isFeatured: isFeatured || false,
-    readTime,
-    publishedAt: status === 'published' ? new Date() : null,
-  });
-
-  await blog.save();
-
-  return NextResponse.json(blog, { status: 201 });
 }
 
 export async function GET(request: NextRequest) {

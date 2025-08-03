@@ -71,8 +71,15 @@ export default function CreateBlogPage() {
         const data = await response.json();
         router.push(`/blog/${data.slug}`);
       } else {
-        const error = await response.json();
-        alert(error.message || 'Something went wrong');
+        let errorMessage = 'Something went wrong';
+        try {
+          const error = await response.json();
+          errorMessage = error.message || errorMessage;
+        } catch (err) {
+          console.warn('Could not parse JSON:', err);
+        }
+        alert(errorMessage);
+
       }
     } catch (error) {
       console.error('Error creating blog:', error);
@@ -133,7 +140,7 @@ export default function CreateBlogPage() {
           />
         </div>
 
-        {/* Excerpt */}
+        {/* Excerpt */} 
         <div>
           <label className="block text-sm font-medium mb-2">
             Excerpt *

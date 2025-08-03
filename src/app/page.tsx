@@ -143,7 +143,7 @@ export default async function HomePage() {
                   className="btn btn-primary btn-lg group bg-primary-foreground text-primary hover:bg-primary-foreground/90"
                 >
                   <Plus className="mr-2 h-4 w-4" />
-                  Create Post
+                    Writing
                 </Link>
               ) : (
                 <Link

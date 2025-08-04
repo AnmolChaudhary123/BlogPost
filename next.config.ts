@@ -65,6 +65,18 @@ const nextConfig: NextConfig = {
         port:"",
         pathname: "/**"
       },
+      {
+        protocol: "https", 
+        hostname: "media.gettyimages.com", 
+        port:"",
+        pathname: "/**"
+      },
+      {
+        protocol: "https",
+        hostname: "www.shutterstock.com",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
 };

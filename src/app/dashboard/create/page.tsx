@@ -15,7 +15,7 @@ interface BlogFormData {
   category: string;
   tags: string;
   featuredImage: string;
-  status: 'draft' | 'published';
+  status:'published';
   isFeatured: boolean;
 }
 
@@ -31,7 +31,7 @@ export default function CreateBlogPage() {
     category: '',
     tags: '',
     featuredImage: '',
-    status: 'draft',
+    status: 'published',
     isFeatured: false,
   });
 
@@ -228,20 +228,6 @@ export default function CreateBlogPage() {
 
         {/* Status and Featured */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Status
-            </label>
-            <select
-              value={formData.status}
-              onChange={(e) => handleChange('status', e.target.value as 'draft' | 'published')}
-              className="input w-full"
-            >
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
-            </select>
-          </div>
-
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
@@ -270,8 +256,8 @@ export default function CreateBlogPage() {
               </>
             ) : (
               <>
-                <Save className="mr-2 h-4 w-4" />
-                Create Post
+                <Save className="mr-2 h-4 w-8" />
+                Published
               </>
             )}
           </button>

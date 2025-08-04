@@ -12,11 +12,12 @@ interface Blog {
   slug: string;
   excerpt: string;
   featuredImage?: string;
-  category: string;
+  category?: string;
+  tag?: string;
   views: number;
   readTime: number;
-  publishedAt?: Date;
-  createdAt: Date;
+  publishedAt?: string;
+  createdAt: string;
   author?: {
     name: string;
   };
@@ -104,7 +105,7 @@ function RelatedPostCard({ post }: { post: Blog }) {
                 <span>{post.views} views</span>
               </div>
             </div>
-            <time dateTime={post.publishedAt?.toISOString() || post.createdAt.toISOString()}>
+            <time dateTime={(post.publishedAt|| post.createdAt)}>
               {formatDate(post.publishedAt || post.createdAt)}
             </time>
           </div>

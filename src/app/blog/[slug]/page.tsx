@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import connectDB from '@/lib/mongodb';
 import { Blog } from '@/models';
 import { formatDate } from '@/utils';
+import { sanitizeBlogPreview } from '@/utils/sanitize';
 import { Eye, Clock, User as UserIcon, Calendar, Tag } from 'lucide-react';
 import BlogComments from '@/components/BlogComments';
 import RelatedPosts from '@/components/RelatedPosts';
@@ -63,17 +64,21 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   await Blog.findByIdAndUpdate(blog._id, { $inc: { views: 1 } });
 
   // Get related posts
-  const relatedPosts = await Blog.find({
-    _id: { $ne: blog._id },
-    status: 'published',
-    $or: [
-      { category: blog.category },
-      { tags: { $in: blog.tags } },
-    ],
-  })
-    .populate('author', 'name')
-    .sort({ publishedAt: -1 })
-    .limit(3);
+ const relatedPosts = await Blog.find({
+  _id: { $ne: blog._id },
+  status: 'published',
+  $or: [
+    { category: blog.category },
+    { tags: { $in: blog.tags } },
+  ],
+})
+.populate('author', 'name')
+.sort({ publishedAt: -1 })
+.limit(3);
+
+// ✅ Sanitize before passing
+const sanitizedRelatedPosts = relatedPosts.map(sanitizeBlogPreview);
+
 
   return (
     <article className="max-w-4xl mx-auto">
@@ -110,7 +115,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </div>
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
-            <span>{formatDate(blog.publishedAt || blog.createdAt)}</span>
+            <span>{formatDate(blog.publishedAt|| blog.createdAt)}</span>
           </div>
           <div className="flex items-center gap-2">
             <Eye className="h-4 w-4" />
@@ -153,10 +158,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       {/* Comments */}
       <BlogComments blogId={blog._id.toString()} />
 
-      {/* Related Posts */}
-      {relatedPosts.length > 0 && (
-        <RelatedPosts posts={relatedPosts} />
-      )}
+    {sanitizedRelatedPosts.length > 0 && (
+    <RelatedPosts posts={sanitizedRelatedPosts} />
+)}
+
     </article>
   );
 } 

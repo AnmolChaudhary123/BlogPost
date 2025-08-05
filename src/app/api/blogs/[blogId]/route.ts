@@ -87,7 +87,7 @@ export async function PUT(
     let slug = existingBlog.slug;
     if (title !== existingBlog.title) {
       slug = generateSlug(title);
-      
+
       // Check if new slug already exists
       const slugExists = await Blog.findOne({ slug, _id: { $ne: resolvedParams.blogId } });
       if (slugExists) {
@@ -131,50 +131,89 @@ export async function PUT(
   }
 }
 
+// export async function DELETE(
+//   request: NextRequest,
+//   { params }: { params: Promise<{ blogId: string }> }
+// ) {
+//   try {
+//     const session = await getServerSession(authOptions) as { user: { id: string } } | null;
+//     if (!session) {
+//       return NextResponse.json(
+//         { message: 'Unauthorized' },
+//         { status: 401 }
+//       );
+//     }
+
+//     await connectDB();
+//     const resolvedParams = await params;
+
+//     // Check if blog exists and user is the author
+//     const existingBlog = await Blog.findById(resolvedParams.blogId);
+//     if (!existingBlog) {
+//       return NextResponse.json(
+//         { message: 'Blog post not found' },
+//         { status: 404 }
+//       );
+//     }
+
+//     if (existingBlog.author.toString() !== session.user.id) {
+//       return NextResponse.json(
+//         { message: 'You are not authorized to delete this post' },
+//         { status: 403 }
+//       );
+//     }
+
+//     // Delete blog
+//     await Blog.findByIdAndDelete(resolvedParams.blogId);
+
+//     return NextResponse.json(
+//       { message: 'Blog post deleted successfully' },
+//       { status: 200 }
+//     );
+//   } catch (error) {
+//     console.error('Error deleting blog:', error);
+//     return NextResponse.json(
+//       { message: 'Internal server error' },
+//       { status: 500 }
+//     );
+//   }
+// } 
+
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ blogId: string }> }
+  { params }: { params: { blogId: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions) as { user: { id: string } } | null;
+    const session = await getServerSession(authOptions) as {
+      user: {
+        id: string;
+        role: string;
+      };
+    } | null;
+
     if (!session) {
-      return NextResponse.json(
-        { message: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
     await connectDB();
-    const resolvedParams = await params;
 
-    // Check if blog exists and user is the author
-    const existingBlog = await Blog.findById(resolvedParams.blogId);
-    if (!existingBlog) {
-      return NextResponse.json(
-        { message: 'Blog post not found' },
-        { status: 404 }
-      );
+    const blog = await Blog.findById(params.blogId);
+    if (!blog) {
+      return NextResponse.json({ message: 'Blog post not found' }, { status: 404 });
     }
 
-    if (existingBlog.author.toString() !== session.user.id) {
-      return NextResponse.json(
-        { message: 'You are not authorized to delete this post' },
-        { status: 403 }
-      );
+    const isAdmin = session.user.role === 'admin';
+    const isOwner = blog.author.toString() === session.user.id;
+
+    if (!isAdmin && !isOwner) {
+      return NextResponse.json({ message: 'You are not authorized to delete this post' }, { status: 403 });
     }
 
-    // Delete blog
-    await Blog.findByIdAndDelete(resolvedParams.blogId);
+    await Blog.findByIdAndDelete(params.blogId);
 
-    return NextResponse.json(
-      { message: 'Blog post deleted successfully' },
-      { status: 200 }
-    );
+    return NextResponse.json({ message: 'Blog post deleted successfully' }, { status: 200 });
   } catch (error) {
     console.error('Error deleting blog:', error);
-    return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
-} 
+}

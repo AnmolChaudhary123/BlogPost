@@ -228,10 +228,10 @@ export default function CreateBlogPage() {
           {formData.featuredImage && (
   <div className="flex items-center gap-4">
     <div className="relative w-20 h-20">
-      <Image
+      <img
         src={formData.featuredImage}
         alt="Featured"
-        fill
+      
         className="object-cover rounded-lg border"
         sizes="80px"
         onError={(e) => {

@@ -96,6 +96,27 @@ export default function CreateBlogPage() {
   if (!session) {
     return null;
   }
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", "upload_blo"); // ✅ Replace this
+       // ✅ Replace this (optional)
+
+  const res = await fetch("https://api.cloudinary.com/v1_1/Blog_upload/blog_images", {
+    method: "POST",
+    body: formData,
+  });
+
+  const data = await res.json();
+  const imageUrl = data.secure_url;
+
+  // Update form data with uploaded image URL
+  handleChange("featuredImage", imageUrl);
+};
+
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -204,25 +225,26 @@ export default function CreateBlogPage() {
               className="input"
               placeholder="https://example.com/image.jpg"
             />
-            {formData.featuredImage && (
-              <div className="flex items-center gap-4">
-                <div className="relative w-20 h-20">
-                  <Image
-                    src={formData.featuredImage}
-                    alt="Featured"
-                    fill
-                    className="object-cover rounded-lg border"
-                    sizes="80px"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                  />
-                </div>
-                <span className="text-sm text-muted-foreground">
-                  Preview of featured image
-                </span>
-              </div>
-            )}
+          {formData.featuredImage && (
+  <div className="flex items-center gap-4">
+    <div className="relative w-20 h-20">
+      <Image
+        src={formData.featuredImage}
+        alt="Featured"
+        fill
+        className="object-cover rounded-lg border"
+        sizes="80px"
+        onError={(e) => {
+          e.currentTarget.style.display = 'none';
+        }}
+      />
+    </div>
+    <span className="text-sm text-muted-foreground">
+      Preview of featured image
+    </span>
+  </div>
+)}
+
           </div>
         </div>
 

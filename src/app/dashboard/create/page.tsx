@@ -15,7 +15,7 @@ interface BlogFormData {
   category: string;
   tags: string;
   featuredImage: string;
-  status:'published';
+  status: 'published';
   isFeatured: boolean;
 }
 
@@ -97,25 +97,25 @@ export default function CreateBlogPage() {
     return null;
   }
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", "upload_blo"); // ✅ Replace this
-       // ✅ Replace this (optional)
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "upload_blo"); // ✅ Replace this
+    // ✅ Replace this (optional)
 
-  const res = await fetch("https://api.cloudinary.com/v1_1/Blog_upload/blog_images", {
-    method: "POST",
-    body: formData,
-  });
+    const res = await fetch("https://api.cloudinary.com/v1_1/Blog_upload/blog_images", {
+      method: "POST",
+      body: formData,
+    });
 
-  const data = await res.json();
-  const imageUrl = data.secure_url;
+    const data = await res.json();
+    const imageUrl = data.secure_url;
 
-  // Update form data with uploaded image URL
-  handleChange("featuredImage", imageUrl);
-};
+    // Update form data with uploaded image URL
+    handleChange("featuredImage", imageUrl);
+  };
 
 
   return (
@@ -161,7 +161,7 @@ export default function CreateBlogPage() {
           />
         </div>
 
-        {/* Excerpt */} 
+        {/* Excerpt */}
         <div>
           <label className="block text-sm font-medium mb-2">
             Excerpt *
@@ -225,25 +225,25 @@ export default function CreateBlogPage() {
               className="input"
               placeholder="https://example.com/image.jpg"
             />
-          {formData.featuredImage && (
-  <div className="flex items-center gap-4">
-    <div className="relative w-20 h-20">
-      <img
-        src={formData.featuredImage}
-        alt="Featured"
-      
-        className="object-cover rounded-lg border"
-        sizes="80px"
-        onError={(e) => {
-          e.currentTarget.style.display = 'none';
-        }}
-      />
-    </div>
-    <span className="text-sm text-muted-foreground">
-      Preview of featured image
-    </span>
-  </div>
-)}
+            {formData.featuredImage && (
+              <div className="flex items-center gap-4">
+                <div className="relative w-20 h-20">
+                  <img
+                    src={formData.featuredImage}
+                    alt="Featured"
+
+                    className="object-cover rounded-lg border"
+                    sizes="80px"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                </div>
+                <span className="text-sm text-muted-foreground">
+                  Preview of featured image
+                </span>
+              </div>
+            )}
 
           </div>
         </div>

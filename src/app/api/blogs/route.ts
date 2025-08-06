@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
       tags: tags || [],
       featuredImage: featuredImage || '',
       author: session.user.id,
-      status: status || 'draft',
+      status: status || 'published',
       isFeatured: isFeatured || false,
       readTime,
       publishedAt: status === 'published' ? new Date() : null,

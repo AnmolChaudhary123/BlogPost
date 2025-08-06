@@ -135,8 +135,7 @@ export default async function DashboardPage() {
           <h2 className="text-xl font-semibold">Your Posts</h2>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span>{publishedCount} published</span>
-            <span>•</span>
-            <span>{draftCount} drafts</span>
+           
           </div>
         </div>
 

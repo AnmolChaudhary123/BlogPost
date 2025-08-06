@@ -9,7 +9,7 @@ export interface IBlog extends Document {
   author: mongoose.Types.ObjectId;
   category: string;
   tags: string[];
-  status: 'draft' | 'published';
+  status: 'published';
   views: number;
   likes: mongoose.Types.ObjectId[];
   readTime: number;
@@ -60,8 +60,7 @@ const BlogSchema = new Schema<IBlog>({
   }],
   status: {
     type: String,
-    enum: ['draft', 'published'],
-    default: 'draft',
+    enum: ['published'],
   },
   views: {
     type: Number,

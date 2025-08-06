@@ -15,7 +15,7 @@ interface BlogFormData {
   category: string;
   tags: string;
   featuredImage: string;
-  status: 'draft' | 'published';
+  status:  'published';
   isFeatured: boolean;
 }
 
@@ -35,7 +35,7 @@ export default function EditBlogPage() {
     category: '',
     tags: '',
     featuredImage: '',
-    status: 'draft',
+    status: 'published',
     isFeatured: false,
   });
 
@@ -291,10 +291,10 @@ export default function EditBlogPage() {
             </label>
             <select
               value={formData.status}
-              onChange={(e) => handleChange('status', e.target.value as 'draft' | 'published')}
+              onChange={(e) => handleChange('status', e.target.value as 'published')}
               className="input w-full"
             >
-              <option value="draft">Draft</option>
+             
               <option value="published">Published</option>
             </select>
           </div>

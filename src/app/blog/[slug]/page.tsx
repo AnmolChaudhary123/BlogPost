@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import connectDB from '@/lib/mongodb';
 import { Blog } from '@/models';
+import { getBlogBySlug } from '@/lib/data';
 import { formatDate } from '@/utils';
 import { Eye, Clock, User as UserIcon, Calendar, Tag } from 'lucide-react';
 import BlogComments from '@/components/BlogComments';
@@ -16,11 +16,8 @@ interface BlogPostPageProps {
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
-  await connectDB();
-  
   const resolvedParams = await params;
-  const blog = await Blog.findOne({ slug: resolvedParams.slug, status: 'published' })
-    .populate('author', 'name');
+  const blog = await getBlogBySlug(resolvedParams.slug);
 
   if (!blog) {
     return {
@@ -49,18 +46,16 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
-  await connectDB();
-
   const resolvedParams = await params;
-  const blog = await Blog.findOne({ slug: resolvedParams.slug, status: 'published' })
-    .populate('author', 'name');
+  const blog = await getBlogBySlug(resolvedParams.slug);
 
   if (!blog) {
     notFound();
   }
 
-  // Increment view count
+  // Increment view count and update local object for immediate reflection
   await Blog.findByIdAndUpdate(blog._id, { $inc: { views: 1 } });
+  blog.views += 1;
 
   // Get related posts
   const relatedPosts = await Blog.find({

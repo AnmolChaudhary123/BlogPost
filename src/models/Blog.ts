@@ -38,7 +38,7 @@ const BlogSchema = new Schema<IBlog>({
   excerpt: {
     type: String,
     required: true,
-    maxlength: 200,
+    maxlength: 1000,
   },
   featuredImage: {
     type: String,

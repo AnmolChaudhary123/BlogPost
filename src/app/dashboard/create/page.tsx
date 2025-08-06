@@ -49,11 +49,11 @@ export default function CreateBlogPage() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async (status: 'draft' | 'published') => {
     if (!session) return;
 
     setIsLoading(true);
+    setFormData(prev => ({ ...prev, status }));
 
     try {
       const response = await fetch('/api/blogs', {
@@ -63,6 +63,7 @@ export default function CreateBlogPage() {
         },
         body: JSON.stringify({
           ...formData,
+          status,
           tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
         }),
       });
@@ -105,7 +106,7 @@ export default function CreateBlogPage() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form className="space-y-6">
         {/* Title */}
         <div>
           <label className="block text-sm font-medium mb-2">
@@ -219,75 +220,55 @@ export default function CreateBlogPage() {
           </div>
         </div>
 
-        {/* Status and Featured */}
-{/*         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Status
-            </label>
-            <select
-              value={formData.status}
-              onChange={(e) => handleChange('status', e.target.value as 'draft' | 'published')}
-              className="input w-full"
-            >
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
-            </select>
-          </div> */}
-
- {/* Submit Button */}
-        <div className="flex gap-4">
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="btn btn-primary"
-          >
-            {isLoading ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Creating...
-              </>
-            ) : (
-              <>
-                <Save className="mr-2 h-4 w-8" />
-                Published
-              </>
-            )}
-          </button>
-
-
-          
-
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="isFeatured"
-              checked={formData.isFeatured}
-              onChange={(e) => handleChange('isFeatured', e.target.checked)}
-              className="rounded border-gray-300"
-            />
-            <label htmlFor="isFeatured" className="text-sm font-medium">
-              Mark as Featured
-            </label>
-          </div>
+        <div className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            id="isFeatured"
+            checked={formData.isFeatured}
+            onChange={(e) => handleChange('isFeatured', e.target.checked)}
+            className="rounded border-gray-300"
+          />
+          <label htmlFor="isFeatured" className="text-sm font-medium">
+            Mark as Featured
+          </label>
         </div>
 
-        {/* Submit Button */}
+        {/* Submit Buttons */}
         <div className="flex gap-4">
           <button
-            type="submit"
+            type="button"
             disabled={isLoading}
+            onClick={() => handleSave('published')}
             className="btn btn-primary"
           >
-            {isLoading ? (
+            {isLoading && formData.status === 'published' ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Creating...
+                Publishing...
               </>
             ) : (
               <>
                 <Save className="mr-2 h-4 w-4" />
-                Create Post
+                Publish
+              </>
+            )}
+          </button>
+
+          <button
+            type="button"
+            disabled={isLoading}
+            onClick={() => handleSave('draft')}
+            className="btn btn-secondary"
+          >
+            {isLoading && formData.status === 'draft' ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 h-4 w-4" />
+                Save as Draft
               </>
             )}
           </button>
